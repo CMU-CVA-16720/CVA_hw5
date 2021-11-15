@@ -107,9 +107,10 @@ def backwards(delta,params,name='',activation_deriv=sigmoid_deriv):
 
     # do the derivative through activation first
     # then compute the derivative W,b, and X
-    ##########################
-    ##### your code here #####
-    ##########################
+    delta2 = delta*activation_deriv(post_act)
+    grad_W = np.transpose(X)@delta2
+    grad_b = np.sum(delta2,axis=0)
+    grad_X = delta2@np.transpose(W)
 
     # store the gradients
     params['grad_W' + name] = grad_W
