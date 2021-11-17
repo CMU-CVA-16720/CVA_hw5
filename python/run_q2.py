@@ -87,20 +87,29 @@ learning_rate = 1e-3
 for itr in range(max_iters):
     total_loss = 0
     avg_acc = 0
+    batch_num = 0
     for xb,yb in batches:
         pass
         # forward
-
+        h1 = forward(xb,params,'layer1')
+        probs = forward(h1,params,'output',softmax)
         # loss
         # be sure to add loss and accuracy to epoch totals 
-
+        loss, acc = compute_loss_and_acc(yb, probs)
+        total_loss += loss
+        avg_acc = (acc + avg_acc*batch_num)/(batch_num+1)
+        batch_num += 1
         # backward
-
+        delta1 = probs
+        delta1[np.arange(probs.shape[0]),np.argmax(yb,axis=1)] -= 1
+        delta2 = backwards(delta1,params,'output',linear_deriv)
+        backwards(delta2,params,'layer1',sigmoid_deriv)
         # apply gradient
+        params['Wlayer1'] = params['Wlayer1']-params['grad_Wlayer1']*learning_rate
+        params['blayer1'] = params['blayer1']-params['grad_blayer1']*learning_rate
+        params['Woutput'] = params['Woutput']-params['grad_Woutput']*learning_rate
+        params['boutput'] = params['boutput']-params['grad_boutput']*learning_rate
 
-        ##########################
-        ##### your code here #####
-        ##########################
 
         
     if itr % 100 == 0:
