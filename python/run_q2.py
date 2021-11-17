@@ -137,28 +137,55 @@ for k,v in params.items():
     #   run the network
     #   get the loss
     #   compute derivative with central diffs
-    for i in range(0,v.shape[0]):
-        for j in range(0,v.shape[1]):
-            orig_val = v[i,j]
+    if('W' in k):
+        # Looking at weights
+        for i in range(0,v.shape[0]):
+            for j in range(0,v.shape[1]):
+                orig_val = v[i,j]
+                # Increment by eps
+                v[i,j] = orig_val+eps
+                # Compute loss
+                h1 = forward(xb,params,'layer1')
+                probs = forward(h1,params,'output',softmax)
+                loss_p, acc = compute_loss_and_acc(yb, probs)
+                # Decrement by 2*eps
+                v[i,j] = orig_val-eps
+                # Compute loss
+                h1 = forward(xb,params,'layer1')
+                probs = forward(h1,params,'output',softmax)
+                loss_n, acc = compute_loss_and_acc(yb, probs)
+                # Restore to original value
+                v[i,j] = orig_val
+                # Get central difference
+                deriv = (loss_p-loss_n)/(2*eps)
+                params['grad_'+k][i,j] = deriv
+                test_layer = 'Wlayer1'
+                if(k==test_layer):
+                    print('{}: Deriv, grad = {}, {}'.format(test_layer, deriv, params_orig['grad_'+test_layer][i,j]))
+    else:
+        # Looking at bias
+        for i in range(0,v.shape[0]):
+            orig_val = v[i]
             # Increment by eps
-            v[i,j] = orig_val+eps
+            v[i] = orig_val+eps
             # Compute loss
             h1 = forward(xb,params,'layer1')
             probs = forward(h1,params,'output',softmax)
             loss_p, acc = compute_loss_and_acc(yb, probs)
             # Decrement by 2*eps
-            v[i,j] = orig_val-eps
+            v[i] = orig_val-eps
             # Compute loss
             h1 = forward(xb,params,'layer1')
             probs = forward(h1,params,'output',softmax)
             loss_n, acc = compute_loss_and_acc(yb, probs)
             # Restore to original value
-            v[i,j] = orig_val
+            v[i] = orig_val
             # Get central difference
-            deriv = (loss_p-loss_n)/2
-            if(k=='Wlayer1'):
-                print('Deriv, grad = {}, {}'.format(deriv, params['grad_Wlayer1'][0,0]))
-        pass
+            deriv = (loss_p-loss_n)/(2*eps)
+            params['grad_'+k][i] = deriv
+            test_layer = 'blayer1'
+            if(k==test_layer):
+                print('{}: Deriv, grad = {}, {}'.format(test_layer, deriv, params_orig['grad_'+test_layer][i]))
 
 total_error = 0
 for k in params.keys():
