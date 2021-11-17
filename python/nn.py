@@ -122,7 +122,19 @@ def backwards(delta,params,name='',activation_deriv=sigmoid_deriv):
 # return a list of [(batch1_x,batch1_y)...]
 def get_random_batches(x,y,batch_size):
     batches = []
-    ##########################
-    ##### your code here #####
-    ##########################
+    # Create random seq of numbers
+    rand_indx = np.arange(x.shape[0])
+    np.random.shuffle(rand_indx)
+    # Produce most batches
+    for i in range(0, x.shape[0]//batch_size):
+        cur_indx = rand_indx[i*batch_size:(i+1)*batch_size]
+        batch1_x = x[cur_indx]
+        batch1_y = y[cur_indx]
+        batches.append((batch1_x, batch1_y))
+    # Last batch
+    if((i+1)*batch_size < x.shape[0]):
+        cur_indx = rand_indx[(i+1)*batch_size:]
+        batch1_x = x[cur_indx]
+        batch1_y = y[cur_indx]
+        batches.append((batch1_x, batch1_y))
     return batches
