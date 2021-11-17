@@ -88,6 +88,7 @@ for itr in range(max_iters):
     total_loss = 0
     avg_acc = 0
     batch_num = 0
+    # batches = get_random_batches(x,y,5)
     for xb,yb in batches:
         pass
         # forward
@@ -105,10 +106,10 @@ for itr in range(max_iters):
         delta2 = backwards(delta1,params,'output',linear_deriv)
         backwards(delta2,params,'layer1',sigmoid_deriv)
         # apply gradient
-        params['Wlayer1'] = params['Wlayer1']-params['grad_Wlayer1']*learning_rate
-        params['blayer1'] = params['blayer1']-params['grad_blayer1']*learning_rate
-        params['Woutput'] = params['Woutput']-params['grad_Woutput']*learning_rate
-        params['boutput'] = params['boutput']-params['grad_boutput']*learning_rate
+        params['Wlayer1'] = params['Wlayer1']-params['grad_Wlayer1']*learning_rate#/xb.shape[0]
+        params['blayer1'] = params['blayer1']-params['grad_blayer1']*learning_rate#/xb.shape[0]
+        params['Woutput'] = params['Woutput']-params['grad_Woutput']*learning_rate#/xb.shape[0]
+        params['boutput'] = params['boutput']-params['grad_boutput']*learning_rate#/xb.shape[0]
 
 
         
