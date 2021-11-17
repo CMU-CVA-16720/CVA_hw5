@@ -20,9 +20,9 @@ max_iters = 50
 # pick a batch size, learning rate
 batch_size = 50
 learning_rate = 1e-2
-in_size = train_x[0].shape[0]
+in_size = train_x.shape[1]
 hidden_size = 64
-out_size = train_y[0].shape[0]
+out_size = train_y.shape[1]
 # Shuffle
 batches = get_random_batches(train_x,train_y,batch_size)
 batch_num = len(batches)
