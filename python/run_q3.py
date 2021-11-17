@@ -55,7 +55,7 @@ for itr in range(max_iters):
         params['Woutput'] -= params['grad_Woutput']*learning_rate#/xb.shape[0]
         params['boutput'] -= params['grad_boutput']*learning_rate#/xb.shape[0]
 
-    total_acc /= batch_size
+    total_acc /= len(batches)
     if itr % 2 == 0:
         print("itr: {:02d} \t loss: {:.2f} \t acc : {:.2f}".format(itr,total_loss,total_acc))
 
