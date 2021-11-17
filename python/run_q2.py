@@ -101,8 +101,7 @@ for itr in range(max_iters):
         avg_acc = (acc + avg_acc*batch_num)/(batch_num+1)
         batch_num += 1
         # backward
-        delta1 = probs
-        delta1[np.arange(probs.shape[0]),np.argmax(yb,axis=1)] -= 1
+        delta1 = probs-yb
         delta2 = backwards(delta1,params,'output',linear_deriv)
         backwards(delta2,params,'layer1',sigmoid_deriv)
         # apply gradient
@@ -138,10 +137,28 @@ for k,v in params.items():
     #   run the network
     #   get the loss
     #   compute derivative with central diffs
-    
-    ##########################
-    ##### your code here #####
-    ##########################
+    for i in range(0,v.shape[0]):
+        for j in range(0,v.shape[1]):
+            orig_val = v[i,j]
+            # Increment by eps
+            v[i,j] = orig_val+eps
+            # Compute loss
+            h1 = forward(xb,params,'layer1')
+            probs = forward(h1,params,'output',softmax)
+            loss_p, acc = compute_loss_and_acc(yb, probs)
+            # Decrement by 2*eps
+            v[i,j] = orig_val-eps
+            # Compute loss
+            h1 = forward(xb,params,'layer1')
+            probs = forward(h1,params,'output',softmax)
+            loss_n, acc = compute_loss_and_acc(yb, probs)
+            # Restore to original value
+            v[i,j] = orig_val
+            # Get central difference
+            deriv = (loss_p-loss_n)/2
+            if(k=='Wlayer1'):
+                print('Deriv, grad = {}, {}'.format(deriv, params['grad_Wlayer1'][0,0]))
+        pass
 
 total_error = 0
 for k in params.keys():
