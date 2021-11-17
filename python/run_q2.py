@@ -119,15 +119,17 @@ for itr in range(max_iters):
 # Q 2.5 should be implemented in this file
 # you can do this before or after training the network. 
 
-##########################
-##### your code here #####
-##########################
+# Update params once more to undo last weight/bias update
+h1 = forward(xb, params, 'layer1')
+probs = forward(h1, params, 'output', softmax)
+delta1 = probs - yb
+delta2 = backwards(delta1, params, 'output', linear_deriv)
+backwards(delta2, params, 'layer1', sigmoid_deriv)
 
-# save the old params
 import copy
+eps = 1e-6
 params_orig = copy.deepcopy(params)
 
-eps = 1e-6
 for k,v in params.items():
     if '_' in k: 
         continue
