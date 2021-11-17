@@ -33,6 +33,7 @@ initialize_weights(hidden_size,out_size,params,'output')
 
 
 # with default settings, you should get loss < 150 and accuracy > 80%
+train_loss_log, train_acc_log = [],[]
 for itr in range(max_iters):
     total_loss = 0
     total_acc = 0
@@ -56,6 +57,9 @@ for itr in range(max_iters):
         params['boutput'] -= params['grad_boutput']*learning_rate#/xb.shape[0]
 
     total_acc /= len(batches)
+    # Logging
+    train_loss_log.append(total_loss)
+    train_acc_log.append(total_acc)
     if itr % 2 == 0:
         print("itr: {:02d} \t loss: {:.2f} \t acc : {:.2f}".format(itr,total_loss,total_acc))
 
