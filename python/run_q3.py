@@ -7,9 +7,11 @@ import copy
 
 train_data = scipy.io.loadmat('../data/nist36_train.mat')
 valid_data = scipy.io.loadmat('../data/nist36_valid.mat')
+test_data = scipy.io.loadmat('../data/nist36_test.mat')
 
 train_x, train_y = train_data['train_data'], train_data['train_labels']
 valid_x, valid_y = valid_data['valid_data'], valid_data['valid_labels']
+test_x, test_y = test_data['test_data'], test_data['test_labels']
 
 
 max_iters = 50
@@ -131,12 +133,17 @@ if False:
 # Q3.4
 confusion_matrix = np.zeros((train_y.shape[1],train_y.shape[1]))
 # Compute predictions
-
+h1 = forward(test_x,params,'layer1')
+probs = forward(h1,params,'output',softmax)
+# probs is [examples, output]
 
 # compute comfusion matrix here
-##########################
-##### your code here #####
-##########################
+prediction = np.argmax(probs,axis=1)
+actual = np.argmax(test_y,axis=1)
+for i in range(0,prediction.shape[0]):
+    confusion_matrix[prediction[i],actual[i]] += 1
+test_acc = np.trace(confusion_matrix)/np.sum(confusion_matrix)
+print("Test accuracy: {}".format(test_acc))
 
 import string
 plt.imshow(confusion_matrix,interpolation='nearest')
