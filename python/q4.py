@@ -12,7 +12,7 @@ from skimage.filters import threshold_otsu
 from skimage.segmentation import clear_border
 from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
-from skimage.color import label2rgb
+from skimage.color import label2rgb, rgb2gray
 from skimage.restoration import denoise_bilateral
 
 # takes a color image
@@ -24,7 +24,7 @@ def findLetters(image, display=False):
     # denoise
     image_clean = denoise_bilateral(image, multichannel = True)
     # conver to grayscale
-    image_gray = 0.2989*image_clean[:,:,0] + 0.5870*image_clean[:,:,1] + 0.1140*image_clean[:,:,2]
+    image_gray = skimage.color.rgb2gray(image_clean)
     # apply threshold
     thresh = threshold_otsu(image_gray)
     bw = closing(image_gray < thresh, square(5))
