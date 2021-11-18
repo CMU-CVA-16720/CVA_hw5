@@ -3,7 +3,7 @@ import numpy as np
 import skimage
 # import skimage.measure
 # import skimage.color
-import skimage.restoration
+# import skimage.restoration
 # import skimage.filters
 # import skimage.morphology
 # import skimage.segmentation
@@ -13,29 +13,29 @@ from skimage.segmentation import clear_border
 from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
 from skimage.color import label2rgb
-
+from skimage.restoration import denoise_bilateral
 
 # takes a color image
 # returns a list of bounding boxes and black_and_white image
 def findLetters(image, display=False):
+    # Output setup
     bboxes = []
     bw = None
-    # insert processing in here
-    # one idea estimate noise -> denoise -> greyscale -> threshold -> morphology -> label -> skip small boxes 
-    # this can be 10 to 15 lines of code using skimage functions
-
+    # denoise
+    image_clean = denoise_bilateral(image, multichannel = True)
+    # conver to grayscale
+    image_gray = 0.2989*image_clean[:,:,0] + 0.5870*image_clean[:,:,1] + 0.1140*image_clean[:,:,2]
     # apply threshold
-    thresh = threshold_otsu(image)
-    bw = closing(image > thresh, square(20))
-
+    thresh = threshold_otsu(image_gray)
+    bw = closing(image_gray < thresh, square(5))
     # remove artifacts connected to image border
     cleared = clear_border(bw)
-
     # label image regions
     label_image = label(cleared)
     # to make the background transparent, pass the value of `bg_label`,
     # and leave `bg_color` as `None` and `kind` as `overlay`
     image_label_overlay = label2rgb(label_image, image=image, bg_label=0)
+    print("Regions detected: {}".format(len(regionprops(label_image))))
     if(display):
         fig, ax = plt.subplots(figsize=(10, 6))
         ax.imshow(image_label_overlay)
@@ -60,8 +60,6 @@ if __name__ == "__main__":
     import matplotlib.patches as mpatches
     import os
     import skimage.io
-    togray = lambda img: 0.2989*img[:,:,0] + 0.5870*img[:,:,1] + 0.1140*img[:,:,2]
     for img in os.listdir('../images'):
         im1 = skimage.img_as_float(skimage.io.imread(os.path.join('../images',img)))
-        im1_gray = togray(im1)
-        bboxes, bw = findLetters(im1_gray, True)
+        bboxes, bw = findLetters(im1, True)
