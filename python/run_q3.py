@@ -73,7 +73,19 @@ for itr in range(max_iters):
         print("itr (vald): {:02d} \t loss: {:.2f} \t acc : {:.2f}".format(itr,valid_loss,valid_acc))
 
 print('Validation accuracy: ',valid_acc)
-if False: # view the data
+# Graphs
+if False:
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), train_acc_log, color='red') # training acc
+    ax.plot(np.arange(0,max_iters), valid_acc_log, color='blue') # valid acc
+    plt.xlim(0, max_iters)
+    plt.ylim(0, 1)
+    plt.title("Training (red) and Validation (blue) Acc vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Acc (%)")
+    plt.show()
+# View batch
+if False:
     for crop in xb:
         import matplotlib.pyplot as plt
         plt.imshow(crop.reshape(32,32).T)
