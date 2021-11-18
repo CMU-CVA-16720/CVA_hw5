@@ -3,6 +3,7 @@ import scipy.io
 from nn import *
 
 import matplotlib.pyplot as plt
+import copy
 
 train_data = scipy.io.loadmat('../data/nist36_train.mat')
 valid_data = scipy.io.loadmat('../data/nist36_valid.mat')
@@ -10,13 +11,9 @@ valid_data = scipy.io.loadmat('../data/nist36_valid.mat')
 train_x, train_y = train_data['train_data'], train_data['train_labels']
 valid_x, valid_y = valid_data['valid_data'], valid_data['valid_labels']
 
-# ex1 = train_x[5000]
-# ex1=ex1.reshape(32,32)
-# plt.imshow(ex1)
-# plt.show()
-
 
 max_iters = 50
+# max_iters = 1
 # pick a batch size, learning rate
 batch_size = 50
 learning_rate = 1e-2
@@ -30,6 +27,7 @@ batch_num = len(batches)
 params = {}
 initialize_weights(in_size,hidden_size,params,'layer1')
 initialize_weights(hidden_size,out_size,params,'output')
+params_init = copy.deepcopy(params)
 
 
 # with default settings, you should get loss < 150 and accuracy > 80%
@@ -75,6 +73,7 @@ for itr in range(max_iters):
 print('Validation accuracy: ',valid_acc)
 # Graphs
 if False:
+    # Accuracy
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), train_acc_log, color='red') # training acc
     ax.plot(np.arange(0,max_iters), valid_acc_log, color='blue') # valid acc
@@ -83,6 +82,15 @@ if False:
     plt.title("Training (red) and Validation (blue) Acc vs Epoch")
     plt.xlabel("Epoch")
     plt.ylabel("Acc (%)")
+    plt.show()
+    # Loss
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), train_loss_log, color='red') # training loss
+    ax.plot(np.arange(0,max_iters), valid_loss_log, color='blue') # valid loss
+    plt.xlim(0, max_iters)
+    plt.title("Training (red) and Validation (blue) Loss vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
     plt.show()
 # View batch
 if False:
@@ -96,16 +104,34 @@ with open('q3_weights.pickle', 'wb') as handle:
     pickle.dump(saved_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Q3.3
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import ImageGrid
-
-# visualize weights here
-##########################
-##### your code here #####
-##########################
+if False:
+    from mpl_toolkits.axes_grid1 import ImageGrid
+    # visualize weights here
+    fig = plt.figure(figsize=(4., 4.))
+    grid = ImageGrid(fig, 111,  # similar to subplot(111)
+                    nrows_ncols=(8, 8),  # creates 2x2 grid of axes
+                    axes_pad=0.1,  # pad between axes in inch.
+                    )
+    for ax, im in zip(grid, np.transpose(params_init['Wlayer1'])):
+        # Iterating over the grid returns the Axes.
+        weight_img = im.reshape((32,32))
+        ax.imshow(weight_img)
+    plt.show()
+    fig = plt.figure(figsize=(4., 4.))
+    grid = ImageGrid(fig, 111,  # similar to subplot(111)
+                    nrows_ncols=(8, 8),  # creates 2x2 grid of axes
+                    axes_pad=0.1,  # pad between axes in inch.
+                    )
+    for ax, im in zip(grid, np.transpose(params['Wlayer1'])):
+        # Iterating over the grid returns the Axes.
+        weight_img = im.reshape((32,32))
+        ax.imshow(weight_img)
+    plt.show()
 
 # Q3.4
 confusion_matrix = np.zeros((train_y.shape[1],train_y.shape[1]))
+# Compute predictions
+
 
 # compute comfusion matrix here
 ##########################
