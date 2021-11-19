@@ -54,7 +54,7 @@ def findLetters(image, display=False, minsize = 100):
         ax.set_axis_off()
         plt.tight_layout()
         plt.show()
-    return bboxes, bw
+    return bboxes, bw.astype(float)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
