@@ -70,7 +70,9 @@ for img in os.listdir('../images'):
 
     # Sort within rows for correct ordering
     for row in rows:
+        # Most elements are in reverse order
         row.reverse()
+        row.sort(key = lambda x: x[1])
     # Crop, tranpose and flatten
     for row in rows:
         for bbox in row:
