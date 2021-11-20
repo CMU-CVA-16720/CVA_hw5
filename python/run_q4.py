@@ -99,11 +99,23 @@ for img in os.listdir('../images'):
     
     # # load the weights
     # # run the crops through your neural network and print them out
-    # import pickle
-    # import string
-    # letters = np.array([_ for _ in string.ascii_uppercase[:26]] + [str(_) for _ in range(10)])
-    # params = pickle.load(open('q3_weights.pickle','rb'))
-    # ##########################
-    # ##### your code here #####
-    # ##########################
+    import pickle
+    import string
+    letters = np.array([_ for _ in string.ascii_uppercase[:26]] + [str(_) for _ in range(10)])
+    params = pickle.load(open('q3_weights.pickle','rb'))
+    class_to_letter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    for x_row in x_matrix:
+        cur_row = ''
+        for xb in x_row:
+            # forward
+            h1 = forward(np.expand_dims(xb,axis=0),params,'layer1')
+            probs = forward(h1,params,'output',softmax)
+            predic = np.argmax(probs)
+            cur_row += class_to_letter[predic]
+            # Debugging
+            # print("Classification = {}".format(class_to_letter[predic]))
+            # plt.imshow(np.transpose(np.reshape(xb,(32,32))))
+            # plt.show()
+        print(cur_row)
+    print()
     
