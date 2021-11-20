@@ -1,4 +1,5 @@
 import os
+from matplotlib import scale
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches
@@ -16,6 +17,7 @@ import skimage.transform
 from nn import *
 from q4 import *
 from scipy.ndimage.morphology import binary_erosion, binary_dilation
+from math import floor, ceil
 # do not include any more libraries here!
 # no opencv, no sklearn, etc!
 import warnings
@@ -85,12 +87,29 @@ for img in os.listdir('../images'):
     x_vect = []
     for row in rows:
         for bbox in row:
-            # Get bounding box
+            # Get bounding box location and dimensions
             minr, minc, maxr, maxc = bbox
+            width, height = maxc-minc, maxr-minr
+            wh_ratio = width/height
             # Get and manipulate image
             cur_img_org = bw[minr:maxr,minc:maxc]
-            cur_img_rshp = skimage.transform.resize(cur_img_org,(28,28))
-            cur_img = 1-(np.pad(cur_img_rshp,(2,)))
+            if(wh_ratio < 1):
+                # Bbox is tall
+                scaled_width = floor(28*wh_ratio)
+                cur_img_rshp = skimage.transform.resize(cur_img_org,(28,scaled_width))
+                # Padding
+                width_padding = 2+(28-scaled_width)/2
+                cur_img_rshp = np.pad(cur_img_rshp,((2,2),(floor(width_padding),ceil(width_padding))))
+                pass
+            else:
+                # Bbox is wide
+                scaled_height = floor(28/wh_ratio)
+                cur_img_rshp = skimage.transform.resize(cur_img_org,(scaled_height,28))
+                # Padding
+                height_padding = 2+(28-scaled_height)/2
+                cur_img_rshp = np.pad(cur_img_rshp,((floor(height_padding),ceil(height_padding)),(2,2)))
+                pass
+            cur_img = 1-cur_img_rshp
             # Turn into vector, then append
             x = np.transpose(cur_img).flatten()
             x_vect.append(x)
@@ -112,7 +131,7 @@ for img in os.listdir('../images'):
             probs = forward(h1,params,'output',softmax)
             predic = np.argmax(probs)
             cur_row += class_to_letter[predic]
-            # Debugging
+            # # Debugging
             # print("Classification = {}".format(class_to_letter[predic]))
             # plt.imshow(np.transpose(np.reshape(xb,(32,32))))
             # plt.show()
