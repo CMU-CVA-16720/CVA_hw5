@@ -11,9 +11,11 @@ import skimage.io
 import skimage.filters
 import skimage.morphology
 import skimage.segmentation
+import skimage.transform
 
 from nn import *
 from q4 import *
+from scipy.ndimage.morphology import binary_erosion, binary_dilation
 # do not include any more libraries here!
 # no opencv, no sklearn, etc!
 import warnings
@@ -73,22 +75,27 @@ for img in os.listdir('../images'):
         # Most elements are in reverse order
         row.reverse()
         row.sort(key = lambda x: x[1])
-    # Crop, tranpose and flatten
-    for row in rows:
-        for bbox in row:
-            minr, minc, maxr, maxc = bbox
-            plt.imshow(bw[minr:maxr,minc:maxc])
-            plt.show()
-    print("blah")
 
 
 
     # crop the bounding boxes
     # note.. before you flatten, transpose the image (that's how the dataset is!)
     # consider doing a square crop, and even using np.pad() to get your images looking more like the dataset
-    ##########################
-    ##### your code here #####
-    ##########################
+    x_matrix = []
+    x_vect = []
+    for row in rows:
+        for bbox in row:
+            # Get bounding box
+            minr, minc, maxr, maxc = bbox
+            # Get and manipulate image
+            cur_img_org = bw[minr:maxr,minc:maxc]
+            cur_img_rshp = skimage.transform.resize(cur_img_org,(28,28))
+            cur_img = 1-(np.pad(cur_img_rshp,(2,)))
+            # Turn into vector, then append
+            x = np.transpose(cur_img).flatten()
+            x_vect.append(x)
+        x_matrix.append(x_vect)
+        x_vect = []
     
     # # load the weights
     # # run the crops through your neural network and print them out
