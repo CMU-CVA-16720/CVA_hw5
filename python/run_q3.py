@@ -58,6 +58,7 @@ for itr in range(max_iters):
         params['boutput'] -= params['grad_boutput']*learning_rate#/xb.shape[0]
 
     total_acc /= len(batches)
+    total_loss /= train_x.shape[0]
     # Logging - training
     train_loss_log.append(total_loss)
     train_acc_log.append(total_acc)
@@ -65,6 +66,7 @@ for itr in range(max_iters):
     h1 = forward(valid_x,params,'layer1')
     probs = forward(h1,params,'output',softmax)
     valid_loss, valid_acc = compute_loss_and_acc(valid_y, probs)
+    valid_loss /= valid_x.shape[0]
     valid_loss_log.append(valid_loss)
     valid_acc_log.append(valid_acc)
     # Display status
@@ -74,7 +76,7 @@ for itr in range(max_iters):
 
 print('Validation accuracy: ',valid_acc)
 # Graphs
-if False:
+if True:
     # Accuracy
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), train_acc_log, color='red') # training acc
