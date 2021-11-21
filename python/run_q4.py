@@ -109,7 +109,15 @@ for img in os.listdir('../images'):
                 height_padding = 2+(28-scaled_height)/2
                 cur_img_rshp = np.pad(cur_img_rshp,((floor(height_padding),ceil(height_padding)),(2,2)))
                 pass
-            cur_img = 1-cur_img_rshp
+            # Testing; try using threshold
+            if True:
+                # Using tresholding
+                thresh = threshold_otsu(cur_img_rshp)
+                bw_rshp = closing(cur_img_rshp < thresh, square(1))
+                cur_img = bw_rshp
+            else:
+                # Without tresholding
+                cur_img = 1-cur_img_rshp
             # Turn into vector, then append
             x = np.transpose(cur_img).flatten()
             x_vect.append(x)
