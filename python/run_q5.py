@@ -66,7 +66,7 @@ for itr in range(max_iters):
         h3 = forward(h2,params,'layer3',relu)
         probs = forward(h3,params,'output',sigmoid)
         # loss
-        loss, acc = compute_loss_and_acc(xb, probs)
+        loss = np.sum((xb - probs)**2)
         total_loss += loss
         # backward
         delta1 = -2*(xb-probs)
@@ -117,7 +117,7 @@ if False:
                 img = np.reshape(probs[i,:],(32,32))
             ax.imshow(img)
         plt.show()
-# Graphs
+# Graph
 if True:
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), train_loss_log, color='red') # training loss
