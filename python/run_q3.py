@@ -110,7 +110,7 @@ if False:
         pickle.dump(saved_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Q3.3
-if False:
+if True:
     from mpl_toolkits.axes_grid1 import ImageGrid
     # visualize weights here
     fig = plt.figure(figsize=(4., 4.))

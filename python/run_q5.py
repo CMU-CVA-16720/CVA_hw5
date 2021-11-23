@@ -118,7 +118,7 @@ if False:
             ax.imshow(img)
         plt.show()
 # Graphs
-if False:
+if True:
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), train_loss_log, color='red') # training loss
     plt.xlim(0, max_iters)
@@ -129,7 +129,7 @@ if False:
 # Q5.3.1
 import matplotlib.pyplot as plt
 # Validation testing
-if False:
+if True:
     from mpl_toolkits.axes_grid1 import ImageGrid
     validation_samples = valid_x[(0,50,100,150,200,250,300,350,400,450),:]
     for i in range(0,validation_samples.shape[0]):
