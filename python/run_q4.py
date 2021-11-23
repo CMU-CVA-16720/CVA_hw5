@@ -30,8 +30,8 @@ for img in os.listdir('../images'):
     bboxes, bw = findLetters(im1)
     
     # Display image + bboxes
-    if False:
-        plt.imshow(bw)
+    if True:
+        plt.imshow(bw,cmap='gray')
         for bbox in bboxes:
             minr, minc, maxr, maxc = bbox
             rect = matplotlib.patches.Rectangle((minc, minr), maxc - minc, maxr - minr,
@@ -87,6 +87,7 @@ for img in os.listdir('../images'):
     x_vect = []
     nominal_dim = 25
     final_dim = 32
+    bw = 1-bw
     for row in rows:
         for bbox in row:
             # Get bounding box location and dimensions
