@@ -85,6 +85,8 @@ for img in os.listdir('../images'):
     # consider doing a square crop, and even using np.pad() to get your images looking more like the dataset
     x_matrix = []
     x_vect = []
+    nominal_dim = 25
+    final_dim = 32
     for row in rows:
         for bbox in row:
             # Get bounding box location and dimensions
@@ -95,19 +97,21 @@ for img in os.listdir('../images'):
             cur_img_org = bw[minr:maxr,minc:maxc]
             if(wh_ratio < 1):
                 # Bbox is tall
-                scaled_width = floor(28*wh_ratio)
-                cur_img_rshp = skimage.transform.resize(cur_img_org,(28,scaled_width))
+                scaled_width = floor(nominal_dim*wh_ratio)
+                cur_img_rshp = skimage.transform.resize(cur_img_org,(nominal_dim,scaled_width))
                 # Padding
-                width_padding = 2+(28-scaled_width)/2
-                cur_img_rshp = np.pad(cur_img_rshp,((2,2),(floor(width_padding),ceil(width_padding))))
+                height_padding = (final_dim-nominal_dim)/2
+                width_padding = height_padding+(nominal_dim-scaled_width)/2
+                cur_img_rshp = np.pad(cur_img_rshp,((floor(height_padding),ceil(height_padding)),(floor(width_padding),ceil(width_padding))))
                 pass
             else:
                 # Bbox is wide
-                scaled_height = floor(28/wh_ratio)
-                cur_img_rshp = skimage.transform.resize(cur_img_org,(scaled_height,28))
+                scaled_height = floor(nominal_dim/wh_ratio)
+                cur_img_rshp = skimage.transform.resize(cur_img_org,(scaled_height,nominal_dim))
                 # Padding
-                height_padding = 2+(28-scaled_height)/2
-                cur_img_rshp = np.pad(cur_img_rshp,((floor(height_padding),ceil(height_padding)),(2,2)))
+                width_padding = (final_dim-nominal_dim)/2
+                height_padding = width_padding+(nominal_dim-scaled_height)/2
+                cur_img_rshp = np.pad(cur_img_rshp,((floor(height_padding),ceil(height_padding)),(floor(width_padding),ceil(width_padding))))
                 pass
             # Testing; try using threshold
             if True:
