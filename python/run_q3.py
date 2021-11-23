@@ -103,7 +103,7 @@ if False:
         plt.imshow(crop.reshape(32,32).T)
         plt.show()
 # Save to pickle
-if False:
+if True:
     import pickle
     saved_params = {k:v for k,v in params.items() if '_' not in k}
     with open('q3_weights.pickle', 'wb') as handle:
