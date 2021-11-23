@@ -118,6 +118,8 @@ for img in os.listdir('../images'):
             else:
                 # Without tresholding
                 cur_img = 1-cur_img_rshp
+            # Make thiccer
+            cur_img = skimage.morphology.erosion(cur_img)
             # Turn into vector, then append
             x = np.transpose(cur_img).flatten()
             x_vect.append(x)
