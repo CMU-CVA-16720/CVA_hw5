@@ -5,6 +5,7 @@ from collections import Counter
 from util import *
 
 import matplotlib.pyplot as plt
+from skimage.metrics import peak_signal_noise_ratio
 
 train_data = scipy.io.loadmat('../data/nist36_train.mat')
 valid_data = scipy.io.loadmat('../data/nist36_valid.mat')
@@ -154,7 +155,13 @@ if False:
 
 # Q5.3.2
 from skimage.metrics import peak_signal_noise_ratio
-# evaluate PSNR
-##########################
-##### your code here #####
-##########################
+total_loss = 0
+for i in range(0, valid_x.shape[0]):
+    h1 = forward(valid_x[i,:],params,'layer1',relu)
+    h2 = forward(h1,params,'layer2',relu)
+    h3 = forward(h2,params,'layer3',relu)
+    probs = forward(h3,params,'output',sigmoid)
+    total_loss += peak_signal_noise_ratio(valid_x[i,:], probs,data_range=1)
+total_loss /= valid_x.shape[0]
+print("Average PSNR over validation dataset = {}".format(total_loss))
+
