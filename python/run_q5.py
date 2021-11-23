@@ -92,6 +92,7 @@ for itr in range(max_iters):
         params['Woutput'] += params['m_Woutput']
         params['boutput'] += params['m_boutput']
     # logging
+    total_loss /= train_x.shape[0]
     train_loss_log.append(total_loss)
     # Printing
     if itr % 2 == 0:
@@ -124,8 +125,10 @@ if False:
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.show()
+# Q5.3.1
+import matplotlib.pyplot as plt
 # Validation testing
-if True:
+if False:
     from mpl_toolkits.axes_grid1 import ImageGrid
     validation_samples = valid_x[(0,50,100,150,200,250,300,350,400,450),:]
     for i in range(0,validation_samples.shape[0]):
@@ -137,22 +140,16 @@ if True:
         for indx,ax in enumerate(grid):
             # Iterating over the grid returns the Axes.
             if(indx == 0):
-                img = np.reshape(validation_samples[i,:],(32,32))
+                img = np.transpose(np.reshape(validation_samples[i,:],(32,32)))
             else:
                 # Forward prop
                 h1 = forward(validation_samples[i,:],params,'layer1',relu)
                 h2 = forward(h1,params,'layer2',relu)
                 h3 = forward(h2,params,'layer3',relu)
                 probs = forward(h3,params,'output',sigmoid)
-                img = np.reshape(probs,(32,32))
-            ax.imshow(img)
+                img = np.transpose(np.reshape(probs,(32,32)))
+            ax.imshow(img,cmap='gray')
         plt.show()
-# Q5.3.1
-import matplotlib.pyplot as plt
-# visualize some results
-##########################
-##### your code here #####
-##########################
 
 
 # Q5.3.2
