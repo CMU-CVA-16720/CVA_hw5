@@ -23,11 +23,13 @@ def findLetters(image, display=False, minsize = 100):
     bw = None
     # denoise
     image_clean = denoise_bilateral(image, multichannel = True)
-    # conver to grayscale
+    # convert to grayscale
     image_gray = skimage.color.rgb2gray(image_clean)
+    # blur
+    image_blur = skimage.filters.gaussian(image_gray, 2)
     # apply threshold
-    thresh = threshold_otsu(image_gray)
-    bw = closing(image_gray < thresh, square(5))
+    thresh = threshold_otsu(image_blur)
+    bw = closing(image_gray < thresh, square(10))
     # remove artifacts connected to image border
     cleared = clear_border(bw)
     # label image regions
@@ -45,12 +47,14 @@ def findLetters(image, display=False, minsize = 100):
         fig, ax = plt.subplots(figsize=(10, 6))
         # ax.imshow(label_image)
         ax.imshow(image_label_overlay)
-        for cur_bbox in bboxes:
+        for ind, cur_bbox in enumerate(bboxes):
             # draw rectangle around segmented coins
             minr, minc, maxr, maxc = cur_bbox
+            print("{} = {} x {}".format(ind, maxr-minr, maxc-minc))
             rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
                                     fill=False, edgecolor='red', linewidth=2)
             ax.add_patch(rect)
+        print("Total bboxes = {}".format(len(bboxes)))
         ax.set_axis_off()
         plt.tight_layout()
         plt.show()
