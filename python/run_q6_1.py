@@ -338,7 +338,7 @@ optimizer = optim.SGD(bownet.parameters(), lr=learning_rate/(5*1177), momentum=m
 batch_size = 1
 
 # Epochs
-max_iters = 10
+max_iters = 15
 
 # Training
 avg_loss_matrix = []
