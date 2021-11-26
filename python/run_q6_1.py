@@ -78,7 +78,7 @@ optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=momentum)
 # Training
 avg_loss_matrix = []
 avg_acc_matrix = []
-if False:
+if True:
     for itr in range(max_iters):
         avg_loss = 0
         avg_acc = 0
@@ -111,15 +111,15 @@ if False:
     ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
     plt.xlim(0, max_iters)
     plt.ylim(0, 1)
-    plt.title("Training Acc vs Epoch")
+    plt.title("Training Acc vs Epoch (6.1.1.)")
     plt.xlabel("Epoch")
-    plt.ylabel("Acc (%)")
+    plt.ylabel("Acc")
     plt.show()
     # Graph loss
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
     plt.xlim(0, max_iters)
-    plt.title("Training Loss vs Epoch")
+    plt.title("Training Loss vs Epoch (6.1.1.)")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.show()
@@ -128,6 +128,10 @@ else:
 
 ####################################### 6.1.2. #######################################
 print('6.1.2. CNN')
+
+# Epochs
+max_iters = 25
+
 class CNNet(nn.Module):
     def __init__(self):
         super(CNNet, self).__init__()
@@ -153,7 +157,7 @@ optimizer = optim.SGD(cnnet.parameters(), lr=learning_rate, momentum=momentum)
 # Training
 avg_loss_matrix = []
 avg_acc_matrix = []
-if False:
+if True:
     for itr in range(max_iters):
         avg_loss = 0
         avg_acc = 0
@@ -186,15 +190,15 @@ if False:
     ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
     plt.xlim(0, max_iters)
     plt.ylim(0, 1)
-    plt.title("Training Acc vs Epoch")
+    plt.title("Training Acc vs Epoch (6.1.2.)")
     plt.xlabel("Epoch")
-    plt.ylabel("Acc (%)")
+    plt.ylabel("Acc")
     plt.show()
     # Graph loss
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
     plt.xlim(0, max_iters)
-    plt.title("Training Loss vs Epoch")
+    plt.title("Training Loss vs Epoch (6.1.2.)")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.show()
@@ -205,6 +209,9 @@ else:
 print('6.1.3. CIFAR')
 # Batch size
 batch_size = 50
+
+# Epochs
+max_iters = 30
 
 # Get CIFAR10 dataset
 transform = transforms.Compose(
@@ -241,7 +248,7 @@ optimizer = optim.SGD(cifar_net.parameters(), lr=learning_rate, momentum=momentu
 # Training
 avg_loss_matrix = []
 avg_acc_matrix = []
-if False:
+if True:
     for itr in range(max_iters):
         avg_loss = 0
         avg_acc = 0
@@ -273,15 +280,15 @@ if False:
     ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
     plt.xlim(0, max_iters)
     plt.ylim(0, 1)
-    plt.title("Training Acc vs Epoch")
+    plt.title("Training Acc vs Epoch (6.1.3.)")
     plt.xlabel("Epoch")
-    plt.ylabel("Acc (%)")
+    plt.ylabel("Acc")
     plt.show()
     # Graph loss
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
     plt.xlim(0, max_iters)
-    plt.title("Training Loss vs Epoch")
+    plt.title("Training Loss vs Epoch (6.1.3.)")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.show()
@@ -401,15 +408,15 @@ if True:
     ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
     plt.xlim(0, max_iters)
     plt.ylim(0, 1)
-    plt.title("Training Acc vs Epoch")
+    plt.title("Training Acc vs Epoch (6.1.4.)")
     plt.xlabel("Epoch")
-    plt.ylabel("Acc (%)")
+    plt.ylabel("Acc")
     plt.show()
     # Graph loss
     ax = plt.axes()
     ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
     plt.xlim(0, max_iters)
-    plt.title("Training Loss vs Epoch")
+    plt.title("Training Loss vs Epoch (6.1.4.)")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.show()
