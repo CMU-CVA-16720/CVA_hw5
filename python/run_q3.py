@@ -71,8 +71,8 @@ for itr in range(max_iters):
     valid_acc_log.append(valid_acc)
     # Display status
     if itr % 2 == 0:
-        print("itr (test): {:02d} \t loss: {:.2f} \t acc : {:.2f}".format(itr,total_loss,total_acc))
-        print("itr (vald): {:02d} \t loss: {:.2f} \t acc : {:.2f}".format(itr,valid_loss,valid_acc))
+        print("itr (train): {:02d} \t loss: {:.2f} \t acc : {:.2f}".format(itr,total_loss,total_acc))
+        print("itr (vald) : {:02d} \t loss: {:.2f} \t acc : {:.2f}".format(itr,valid_loss,valid_acc))
 
 print('Validation accuracy: ',valid_acc)
 # Graphs
@@ -85,7 +85,7 @@ if True:
     plt.ylim(0, 1)
     plt.title("Training (red) and Validation (blue) Acc vs Epoch")
     plt.xlabel("Epoch")
-    plt.ylabel("Acc (%)")
+    plt.ylabel("Acc")
     plt.show()
     # Loss
     ax = plt.axes()
