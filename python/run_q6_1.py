@@ -305,6 +305,19 @@ train_labels_list = []
 with open(train_labels_dir, 'r') as train_labels_obj:
     for line in train_labels_obj:
         train_labels_list.append(int(line.strip()))
+test_files_txt = 'test_files.txt'
+test_labels_txt = 'test_labels.txt'
+test_files_dir = os.path.join(hw1_data_path, test_files_txt)
+test_labels_dir = os.path.join(hw1_data_path, test_labels_txt)
+test_files_list = []
+with open(test_files_dir, 'r') as test_files_obj:
+    for line in test_files_obj:
+        test_files_list.append(os.path.join(hw1_data_path, line).strip())
+test_labels_list = []
+with open(test_labels_dir, 'r') as test_labels_obj:
+    for line in test_labels_obj:
+        test_labels_list.append(int(line.strip()))
+test_x_dir, test_y = test_files_list, test_labels_list
 # Shuffle training
 temp = list(zip(train_files_list, train_labels_list))
 random.shuffle(temp)
@@ -338,7 +351,7 @@ optimizer = optim.SGD(bownet.parameters(), lr=learning_rate/(5*1177), momentum=m
 batch_size = 1
 
 # Epochs
-max_iters = 15
+max_iters = 10
 
 # Training
 avg_loss_matrix = []
@@ -400,7 +413,47 @@ if True:
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.show()
+
+    # Testing
+    with torch.no_grad():
+        avg_loss = 0
+        avg_acc = 0
+        for i, (x_dir, y) in enumerate(zip(test_x_dir, test_y)):
+            x_org = cv2.imread(x_dir)
+            if(np.all(x_org) == None):
+                print('File error detected. Skipping')
+                continue
+            x_org = cv2.resize(x_org, img_size)
+            x = np.zeros((3,x_org.shape[0], x_org.shape[1]))
+            if(len(x.shape)<3):
+                # x is grayscale
+                x[0] = x_org
+                x[1] = x_org
+                x[2] = x_org
+            else:
+                x[0] = x_org[:,:,0]
+                x[1] = x_org[:,:,1]
+                x[2] = x_org[:,:,2]
+            # Batch size of 1
+            inputs = torch.from_numpy(np.expand_dims(x,axis=0)).type(torch.float32)
+            labels = torch.tensor([y])
+            # zero the parameter gradients
+            optimizer.zero_grad()
+            # forward
+            outputs = bownet(inputs)
+            # Accuracy
+            _, predictions = torch.max(outputs, dim=1)
+            avg_acc += torch.count_nonzero(predictions == labels).item()
+            # Loss
+            loss = criterion(outputs, labels)
+            avg_loss += loss.item()
+        # Average loss and accuracy over training set
+        avg_acc /= (i+1)*batch_size
+        avg_loss /= (i+1)*batch_size
+        avg_acc_matrix.append(avg_acc)
+        avg_loss_matrix.append(avg_loss)
+        print('Test Accuracy = {}'.format(avg_acc))
 else:
-    print('Skipped training for 6.1.4.')
+    print('Skipped 6.1.4.')
 pass
 
