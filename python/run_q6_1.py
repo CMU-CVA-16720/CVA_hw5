@@ -123,22 +123,73 @@ else:
     print('Skipped training')
 
 ####################################### 6.1.2. #######################################
+# Using CNN shown in tutorial, modified for our use
 class CNNet(nn.Module):
     def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
+        super(CNNet, self).__init__()
+        self.conv1 = nn.Conv2d(1, 6, 5)
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        self.fc3 = nn.Linear(84, 36)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.max_pool2d(F.relu(self.conv1(x)), 2)
+        x = F.max_pool2d(F.relu(self.conv2(x)), 2)
+        x = torch.flatten(x, 1)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-cnnet = CNNet()
+net = CNNet()
+
+# Training
+avg_loss_matrix = []
+avg_acc_matrix = []
+if True:
+    for itr in range(max_iters):
+        avg_loss = 0
+        avg_acc = 0
+        for i, data in enumerate(train_loader, 0):
+            # get the inputs; data is a list of [inputs, labels]
+            inputs, labels = data
+            _, answers = torch.max(labels, dim=1)
+            # zero the parameter gradients
+            optimizer.zero_grad()
+            # forward
+            outputs = net(torch.unsqueeze(inputs.reshape((50,32,32)), dim=1))
+            # Accuracy
+            _, predictions = torch.max(outputs, dim=1)
+            avg_acc += torch.count_nonzero(predictions == answers).item()
+            # Loss
+            loss = criterion(outputs, answers)
+            avg_loss += loss.item()
+            #  backward + optimize
+            loss.backward()
+            optimizer.step()
+        # Average loss and accuracy over training set
+        avg_acc /= train_x.shape[0]
+        avg_loss /= train_x.shape[0]
+        avg_acc_matrix.append(avg_acc)
+        avg_loss_matrix.append(avg_loss)
+        print('{} - Acc/loss = {} / {}'.format(itr, avg_acc, avg_loss))
+    print('Finished Training')
+    # Graph accuracy
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
+    plt.xlim(0, max_iters)
+    plt.ylim(0, 1)
+    plt.title("Training Acc vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Acc (%)")
+    plt.show()
+    # Graph loss
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
+    plt.xlim(0, max_iters)
+    plt.title("Training Loss vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.show()
+else:
+    print('Skipped training')
