@@ -13,6 +13,7 @@ import scipy.io
 from nn import *
 
 ####################################### 6.1.1. #######################################
+print('6.1.1. Torch')
 
 # Batch size
 batch_size = 50
@@ -120,10 +121,10 @@ if False:
     plt.ylabel("Loss")
     plt.show()
 else:
-    print('Skipped training')
+    print('Skipped training for 6.1.1.')
 
 ####################################### 6.1.2. #######################################
-# Using CNN shown in tutorial, modified for our use
+print('6.1.2. CNN')
 class CNNet(nn.Module):
     def __init__(self):
         super(CNNet, self).__init__()
@@ -149,7 +150,7 @@ optimizer = optim.SGD(cnnet.parameters(), lr=learning_rate, momentum=momentum)
 # Training
 avg_loss_matrix = []
 avg_acc_matrix = []
-if True:
+if False:
     for itr in range(max_iters):
         avg_loss = 0
         avg_acc = 0
@@ -195,4 +196,91 @@ if True:
     plt.ylabel("Loss")
     plt.show()
 else:
-    print('Skipped training')
+    print('Skipped training for 6.1.2.')
+
+####################################### 6.1.3. #######################################
+print('6.1.3. CIFAR')
+# Batch size
+batch_size = 50
+
+# Get CIFAR10 dataset
+transform = transforms.Compose(
+    [transforms.ToTensor(),
+     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+                                        download=True, transform=transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                          shuffle=True, num_workers=2)
+
+class CIFARNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+cifar_net = CIFARNet()
+
+# Trainer
+optimizer = optim.SGD(cifar_net.parameters(), lr=learning_rate, momentum=momentum)
+
+# Training
+avg_loss_matrix = []
+avg_acc_matrix = []
+if True:
+    for itr in range(max_iters):
+        avg_loss = 0
+        avg_acc = 0
+        for i, data in enumerate(trainloader, 0):
+            # get the inputs; data is a list of [inputs, labels]
+            inputs, labels = data
+            # zero the parameter gradients
+            optimizer.zero_grad()
+            # forward
+            outputs = cifar_net(inputs)
+            # Accuracy
+            _, predictions = torch.max(outputs, dim=1)
+            avg_acc += torch.count_nonzero(predictions == labels).item()
+            # Loss
+            loss = criterion(outputs, labels)
+            avg_loss += loss.item()
+            #  backward + optimize
+            loss.backward()
+            optimizer.step()
+        # Average loss and accuracy over training set
+        avg_acc /= (i+1)*batch_size
+        avg_loss /= (i+1)*batch_size
+        avg_acc_matrix.append(avg_acc)
+        avg_loss_matrix.append(avg_loss)
+        print('{} - Acc/loss = {} / {}'.format(itr, avg_acc, avg_loss))
+    print('Finished Training')
+    # Graph accuracy
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
+    plt.xlim(0, max_iters)
+    plt.ylim(0, 1)
+    plt.title("Training Acc vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Acc (%)")
+    plt.show()
+    # Graph loss
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
+    plt.xlim(0, max_iters)
+    plt.title("Training Loss vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.show()
+else:
+    print('Skipped training for 6.1.3.')
