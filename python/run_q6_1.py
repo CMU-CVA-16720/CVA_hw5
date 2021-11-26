@@ -20,7 +20,7 @@ max_iters = 50
 # max_iters = 1
 
 # Learning rate & momentum
-learning_rate = 1e-1
+learning_rate = 1e-2
 momentum = 0.9
 
 # Get data
@@ -61,7 +61,7 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = F.sigmoid(self.fc1(x))
-        x = F.softmax(self.fc2(x))
+        x = self.fc2(x)
         return x
 net = Net()
 
