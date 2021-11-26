@@ -141,7 +141,10 @@ class CNNet(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-net = CNNet()
+cnnet = CNNet()
+
+# Trainer
+optimizer = optim.SGD(cnnet.parameters(), lr=learning_rate, momentum=momentum)
 
 # Training
 avg_loss_matrix = []
@@ -157,7 +160,7 @@ if True:
             # zero the parameter gradients
             optimizer.zero_grad()
             # forward
-            outputs = net(torch.unsqueeze(inputs.reshape((50,32,32)), dim=1))
+            outputs = cnnet(torch.unsqueeze(inputs.reshape((50,32,32)), dim=1))
             # Accuracy
             _, predictions = torch.max(outputs, dim=1)
             avg_acc += torch.count_nonzero(predictions == answers).item()
