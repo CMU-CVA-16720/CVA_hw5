@@ -70,6 +70,8 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=momentum)
 
 # Training
+avg_loss_matrix = []
+avg_acc_matrix = []
 for itr in range(max_iters):
     avg_loss = 0
     avg_acc = 0
@@ -93,10 +95,30 @@ for itr in range(max_iters):
     # Average loss and accuracy over training set
     avg_acc /= train_x.shape[0]
     avg_loss /= train_x.shape[0]
-    print('Acc/loss = {} / {}'.format(avg_acc, avg_loss))
-
+    avg_acc_matrix.append(avg_acc)
+    avg_loss_matrix.append(avg_loss)
+    print('{} - Acc/loss = {} / {}'.format(itr, avg_acc, avg_loss))
 print('Finished Training')
 
+# Graphs
+if True:
+    # Accuracy
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
+    plt.xlim(0, max_iters)
+    plt.ylim(0, 1)
+    plt.title("Training Acc vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Acc (%)")
+    plt.show()
+    # Loss
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
+    plt.xlim(0, max_iters)
+    plt.title("Training Loss vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.show()
 ########################################################################
 # Let's quickly save our trained model:
 
