@@ -9,6 +9,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import scipy.io
+import os
+import random
+import cv2
 
 from nn import *
 
@@ -238,7 +241,7 @@ optimizer = optim.SGD(cifar_net.parameters(), lr=learning_rate, momentum=momentu
 # Training
 avg_loss_matrix = []
 avg_acc_matrix = []
-if True:
+if False:
     for itr in range(max_iters):
         avg_loss = 0
         avg_acc = 0
@@ -284,3 +287,120 @@ if True:
     plt.show()
 else:
     print('Skipped training for 6.1.3.')
+
+####################################### 6.1.4. #######################################
+print('6.1.4. HW1 Revisited')
+
+# Get files
+hw1_data_path = '../../HW1/data'
+train_files_txt = 'train_files.txt'
+train_labels_txt = 'train_labels.txt'
+train_files_dir = os.path.join(hw1_data_path, train_files_txt)
+train_labels_dir = os.path.join(hw1_data_path, train_labels_txt)
+train_files_list = []
+with open(train_files_dir, 'r') as train_files_obj:
+    for line in train_files_obj:
+        train_files_list.append(os.path.join(hw1_data_path, line).strip())
+train_labels_list = []
+with open(train_labels_dir, 'r') as train_labels_obj:
+    for line in train_labels_obj:
+        train_labels_list.append(int(line.strip()))
+# Shuffle training
+temp = list(zip(train_files_list, train_labels_list))
+random.shuffle(temp)
+train_x_dir, train_y = zip(*temp)
+
+# Net
+class BOWNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 47 * 47, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 8)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+bownet = BOWNet()
+
+# Trainer
+optimizer = optim.SGD(bownet.parameters(), lr=learning_rate/(5*1177), momentum=momentum)
+
+# Batch size
+batch_size = 1
+
+# Epochs
+max_iters = 10
+
+# Training
+avg_loss_matrix = []
+avg_acc_matrix = []
+img_size = (200, 200)
+if True:
+    for itr in range(max_iters):
+        avg_loss = 0
+        avg_acc = 0
+        for i, (x_dir, y) in enumerate(zip(train_x_dir, train_y)):
+            x_org = cv2.resize(cv2.imread(x_dir), img_size)
+            x = np.zeros((3,x_org.shape[0], x_org.shape[1]))
+            if(len(x.shape)<3):
+                # x is grayscale
+                x[0] = x_org
+                x[1] = x_org
+                x[2] = x_org
+            else:
+                x[0] = x_org[:,:,0]
+                x[1] = x_org[:,:,1]
+                x[2] = x_org[:,:,2]
+            # Batch size of 1
+            inputs = torch.from_numpy(np.expand_dims(x,axis=0)).type(torch.float32)
+            labels = torch.tensor([y])
+            # zero the parameter gradients
+            optimizer.zero_grad()
+            # forward
+            outputs = bownet(inputs)
+            # Accuracy
+            _, predictions = torch.max(outputs, dim=1)
+            avg_acc += torch.count_nonzero(predictions == labels).item()
+            # Loss
+            loss = criterion(outputs, labels)
+            avg_loss += loss.item()
+            #  backward + optimize
+            loss.backward()
+            optimizer.step()
+        # Average loss and accuracy over training set
+        avg_acc /= (i+1)*batch_size
+        avg_loss /= (i+1)*batch_size
+        avg_acc_matrix.append(avg_acc)
+        avg_loss_matrix.append(avg_loss)
+        print('{} - Acc/loss = {} / {}'.format(itr, avg_acc, avg_loss))
+    print('Finished Training')
+    # Graph accuracy
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_acc_matrix, color='red') # training acc
+    plt.xlim(0, max_iters)
+    plt.ylim(0, 1)
+    plt.title("Training Acc vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Acc (%)")
+    plt.show()
+    # Graph loss
+    ax = plt.axes()
+    ax.plot(np.arange(0,max_iters), avg_loss_matrix, color='red') # training loss
+    plt.xlim(0, max_iters)
+    plt.title("Training Loss vs Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.show()
+else:
+    print('Skipped training for 6.1.4.')
+pass
+
